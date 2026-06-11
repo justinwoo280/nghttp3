@@ -1,6 +1,9 @@
 # emacs backup file
 *~
 
+# CMake build directory
+build/
+
 # autotools
 *.la
 *.lo
