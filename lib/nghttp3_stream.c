@@ -333,7 +333,7 @@ int nghttp3_stream_write_settings(nghttp3_stream *stream,
   int rv;
   nghttp3_buf *chunk;
   nghttp3_typed_buf tbuf;
-  nghttp3_settings_entry ents[16];
+  nghttp3_settings_entry ents[32];
   nghttp3_frame_settings fr = {
     .type = NGHTTP3_FRAME_SETTINGS,
     .niv = 3,
@@ -341,6 +341,7 @@ int nghttp3_stream_write_settings(nghttp3_stream *stream,
   };
   const nghttp3_settings *local_settings = infr->local_settings;
   uint64_t payloadlen;
+  size_t i;
 
   ents[0] = (nghttp3_settings_entry){
     .id = NGHTTP3_SETTINGS_ID_MAX_FIELD_SECTION_SIZE,
@@ -370,6 +371,13 @@ int nghttp3_stream_write_settings(nghttp3_stream *stream,
       .value = 1,
     };
 
+    ++fr.niv;
+  }
+
+  for (i = 0; i < local_settings->num_ext_settings &&
+              fr.niv < sizeof(ents) / sizeof(ents[0]);
+       ++i) {
+    ents[fr.niv] = local_settings->ext_settings[i];
     ++fr.niv;
   }
 
